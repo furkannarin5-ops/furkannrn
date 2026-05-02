@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Furkan — Design Anthropologist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --paper: #f0ece3;
+    --aged: #d4c9b0;
+    --rust: #8b4a2b;
+    --moss: #4a5c3a;
+    --void: #0d0b09;
+    --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: var(--grain);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+  }
+
+  /* CUSTOM CURSOR */
+  * { cursor: crosshair; }
+  a, button { cursor: crosshair; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 2rem;
+    mix-blend-mode: multiply;
+  }
+
+  nav .sig {
+    font-family: 'IM Fell English', serif;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav ul a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  nav ul a:hover { opacity: 1; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    padding: 8rem 2rem 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-tag {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 2rem;
+  }
+
+  .hero-name {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    line-height: 0.95;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 1.2s ease both;
+  }
+
+  .hero-name em {
+    font-style: italic;
+    display: block;
+    color: var(--rust);
+  }
+
+  .hero-desc {
+    max-width: 380px;
+    opacity: 0.7;
+    font-size: 12px;
+    animation: fadeUp 1.2s 0.2s ease both;
+    border-left: 2px solid var(--rust);
+    padding-left: 1rem;
+  }
+
+  .hero-coords {
+    margin-top: 3rem;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    opacity: 0.4;
+    animation: fadeUp 1.2s 0.4s ease both;
+  }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-right::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, var(--paper) 0%, transparent 30%);
+    z-index: 1;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    bottom: -2rem;
+    right: -1rem;
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(6rem, 14vw, 12rem);
+    line-height: 1;
+    color: var(--aged);
+    font-style: italic;
+    white-space: nowrap;
+    user-select: none;
+    z-index: 0;
+    transform: rotate(-3deg);
+  }
+
+  .hero-spiral {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    opacity: 0.15;
+  }
+
+  /* MARQUEE */
+  .marquee-strip {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0.6rem 0;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .marquee-inner {
+    display: inline-block;
+    animation: marquee 25s linear infinite;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .marquee-inner span { margin: 0 3rem; opacity: 0.6; }
+  .marquee-inner span.dot { opacity: 1; color: var(--rust); }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SECTION STRUCTURE */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-bottom: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--aged);
+  }
+
+  /* ABOUT / MANIFESTO */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .about-left .statement {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+  }
+
+  .about-left .statement em { color: var(--rust); font-style: italic; }
+
+  .manifesto-points {
+    list-style: none;
+  }
+
+  .manifesto-points li {
+    padding: 1.2rem 0;
+    border-top: 1px solid var(--aged);
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 1rem;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .manifesto-points li .num {
+    color: var(--rust);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding-top: 2px;
+  }
+
+  .about-right .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .tag {
+    border: 1px solid var(--aged);
+    padding: 0.3rem 0.8rem;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* WORK GRID */
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .work-item {
+    position: relative;
+    overflow: hidden;
+    background: var(--aged);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .work-item.visible { opacity: 1; transform: translateY(0); }
+
+  .work-item:nth-child(1) { grid-column: 1 / 8; }
+  .work-item:nth-child(2) { grid-column: 8 / 13; }
+  .work-item:nth-child(3) { grid-column: 1 / 5; }
+  .work-item:nth-child(4) { grid-column: 5 / 10; }
+  .work-item:nth-child(5) { grid-column: 10 / 13; }
+
+  .work-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--aged);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .work-item:nth-child(1) .work-placeholder { aspect-ratio: 16/9; }
+  .work-item:nth-child(2) .work-placeholder { aspect-ratio: 3/4; }
+
+  .work-placeholder-inner {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.3;
+    text-align: center;
+  }
+
+  .work-placeholder-icon {
+    font-family: 'IM Fell English', serif;
+    font-size: 3rem;
+    opacity: 0.15;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .work-meta {
+    padding: 1rem;
+    background: var(--paper);
+    border-top: 1px solid var(--aged);
+  }
+
+  .work-meta .cat {
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 0.3rem;
+  }
+
+  .work-meta h3 {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.1rem;
+    font-weight: normal;
+    margin-bottom: 0.3rem;
+  }
+
+  .work-meta p {
+    font-size: 10px;
+    opacity: 0.5;
+    line-height: 1.5;
+  }
+
+  .work-item:hover .work-placeholder-inner { opacity: 0.6; }
+  .work-item:hover { box-shadow: 4px 4px 0 var(--ink); }
+  .work-item { transition: box-shadow 0.2s, opacity 0.6s, transform 0.6s; }
+
+  /* WRITING SECTION */
+  .writing-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .writing-item {
+    border: 1px solid var(--aged);
+    padding: 2rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .writing-item:hover { background: var(--ink); color: var(--paper); }
+  .writing-item:hover .wt-cat { color: var(--aged); }
+  .writing-item:hover .wt-date { opacity: 0.4; }
+
+  .wt-cat {
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 1rem;
+  }
+
+  .writing-item h3 {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.4rem;
+    font-weight: normal;
+    line-height: 1.2;
+    margin-bottom: 0.8rem;
+  }
+
+  .writing-item p {
+    font-size: 11px;
+    opacity: 0.6;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .wt-date {
+    font-size: 9px;
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+  }
+
+  .wt-arrow {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 1.2rem;
+    opacity: 0.2;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .writing-item:hover .wt-arrow { opacity: 1; transform: translate(3px, -3px); }
+
+  /* POETRY SECTION */
+  .poetry-section {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 6rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .poetry-section .section-label { color: var(--paper); opacity: 0.3; }
+  .poetry-section .section-label::after { background: rgba(255,255,255,0.1); }
+
+  .poetry-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+  }
+
+  .poem-display {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.05rem;
+    line-height: 2;
+    font-style: italic;
+    opacity: 0.85;
+  }
+
+  .poem-display .poem-title {
+    font-size: 0.7rem;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-style: normal;
+    opacity: 0.4;
+    margin-bottom: 1.5rem;
+  }
+
+  .poem-navigation {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    align-items: center;
+  }
+
+  .poem-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--paper);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .poem-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+
+  .poem-counter {
+    font-size: 9px;
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+  }
+
+  .poetry-bg-text {
+    position: absolute;
+    right: -2rem;
+    bottom: -3rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 15rem;
+    font-style: italic;
+    opacity: 0.03;
+    user-select: none;
+    line-height: 1;
+  }
+
+  /* EXPLORATIONS */
+  .explorations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--aged);
+  }
+
+  .exp-item {
+    background: var(--paper);
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    transition: background 0.3s;
+  }
+
+  .exp-item::before {
+    content: attr(data-num);
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    opacity: 0.2;
+  }
+
+  .exp-icon {
+    font-family: 'IM Fell English', serif;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+
+  .exp-item:hover { background: var(--ink); color: var(--paper); }
+  .exp-item:hover .exp-icon { opacity: 0.6; }
+
+  .exp-item h3 {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.2rem;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+  }
+
+  .exp-item p {
+    font-size: 10px;
+    opacity: 0.5;
+    line-height: 1.5;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    border-top: 1px solid var(--aged);
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .contact-left h2 {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: normal;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .contact-left h2 em { color: var(--rust); font-style: italic; }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .contact-link {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--aged);
+    transition: padding-left 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .contact-link:hover { padding-left: 0.5rem; }
+  .contact-link .cl-type { opacity: 0.4; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; width: 80px; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--aged);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
+  }
+
+  /* UPLOAD ZONE */
+  .upload-hint {
+    border: 1px dashed var(--aged);
+    padding: 2rem;
+    text-align: center;
+    font-size: 10px;
+    opacity: 0.5;
+    transition: opacity 0.2s, border-color 0.2s;
+    position: relative;
+  }
+
+  .upload-hint:hover { opacity: 0.8; border-color: var(--ink); }
+  .upload-hint input[type=file] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; }
+  .upload-hint .uh-icon { font-size: 1.5rem; display: block; margin-bottom: 0.5rem; opacity: 0.3; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .writing-layout { grid-template-columns: 1fr; }
+    .poetry-container { grid-template-columns: 1fr; gap: 3rem; }
+    .explorations-grid { grid-template-columns: 1fr 1fr; }
+    .contact-section { grid-template-columns: 1fr; }
+    .works-grid { grid-template-columns: 1fr 1fr; }
+    .work-item:nth-child(n) { grid-column: auto; }
+    nav ul { display: none; }
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--rust);
+    z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  /* SECTION DIVIDER */
+  .divider {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 1px;
+    background: var(--aged);
+  }
+
+  /* FIELD NOTE STYLE ASIDE */
+  .field-note {
+    background: var(--aged);
+    padding: 1.5rem;
+    font-size: 10px;
+    line-height: 1.8;
+    font-style: italic;
+    position: relative;
+    margin-top: 2rem;
+  }
+
+  .field-note::before {
+    content: 'field note //';
+    display: block;
+    font-style: normal;
+    letter-spacing: 0.15em;
+    font-size: 8px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-line" id="scrollLine"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="sig">F.</a>
+  <ul>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#writing">Writing</a></li>
+    <li><a href="#poetry">Poetry</a></li>
+    <li><a href="#explorations">Explorations</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">[ design anthropologist · ankara ]</div>
+    <h1 class="hero-name">
+      Furkan<br>
+      <em>& the spaces<br>between</em>
+    </h1>
+    <p class="hero-desc">
+      Mapping the undefined — liminal zones, docile bodies, reclaimed corners. 
+      Design as resistance; research as fieldwork; writing as method.
+    </p>
+    <div class="hero-coords">39°52'N 32°51'E · ODTÜ · 2026</div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-bg-text">threshold</div>
+    <svg class="hero-spiral" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M200 200 Q230 170 260 200 Q290 230 260 260 Q230 290 200 260 Q170 230 170 200 Q170 160 210 150 Q260 140 290 180 Q320 220 300 270 Q280 320 230 330 Q170 340 140 300 Q100 250 120 200 Q140 140 200 120 Q270 100 310 160 Q340 210 320 270" stroke="var(--ink)" stroke-width="1.5"/>
+      <circle cx="200" cy="200" r="2" fill="var(--rust)"/>
+      <text x="210" y="205" font-size="8" fill="var(--ink)" font-family="IBM Plex Mono" opacity="0.4">you are here</text>
+    </svg>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span>Design Anthropology</span><span class="dot">✦</span>
+    <span>Spatial Praxis</span><span class="dot">✦</span>
+    <span>Liminal Zones</span><span class="dot">✦</span>
+    <span>Thick Description</span><span class="dot">✦</span>
+    <span>Anti-Panoptic</span><span class="dot">✦</span>
+    <span>Material Culture</span><span class="dot">✦</span>
+    <span>Field Research</span><span class="dot">✦</span>
+    <span>Queue-Culture Mapping</span><span class="dot">✦</span>
+    <span>Design Anthropology</span><span class="dot">✦</span>
+    <span>Spatial Praxis</span><span class="dot">✦</span>
+    <span>Liminal Zones</span><span class="dot">✦</span>
+    <span>Thick Description</span><span class="dot">✦</span>
+    <span>Anti-Panoptic</span><span class="dot">✦</span>
+    <span>Material Culture</span><span class="dot">✦</span>
+    <span>Field Research</span><span class="dot">✦</span>
+    <span>Queue-Culture Mapping</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">00 · Who</div>
+  <div class="about-grid">
+    <div class="about-left">
+      <p class="statement">
+        I study the <em>unnamed</em> — corners no one planned, 
+        queues that become commons, 
+        thresholds that resist the grid.
+      </p>
+      <ul class="manifesto-points">
+        <li>
+          <span class="num">01</span>
+          <span>Space is political. Every corridor is an argument about who belongs.</span>
+        </li>
+        <li>
+          <span class="num">02</span>
+          <span>Design without anthropology is furniture rearrangement.</span>
+        </li>
+        <li>
+          <span class="num">03</span>
+          <span>The informal path is data. Follow it before you pave it.</span>
+        </li>
+        <li>
+          <span class="num">04</span>
+          <span>Public privacy is not an oxymoron — it is a right.</span>
+        </li>
+      </ul>
+    </div>
+    <div class="about-right">
+      <div class="tags">
+        <span class="tag">Design Anthropology</span>
+        <span class="tag">Spatial Research</span>
+        <span class="tag">Zazaca / Dimili</span>
+        <span class="tag">Material Culture</span>
+        <span class="tag">Critical Theory</span>
+        <span class="tag">Geertz</span>
+        <span class="tag">Foucault</span>
+        <span class="tag">Deleuze</span>
+        <span class="tag">Lefebvre</span>
+        <span class="tag">Field Research</span>
+      </div>
+      <div class="field-note">
+        Currently building Alt Tasarım — Maddi Kültür Arşivi, 
+        a Turkish-language design archive mapping material culture 
+        at the intersection of heritage and contemporary spatial practice.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WORK -->
+<section id="work">
+  <div class="section-label">01 · Work & Research</div>
+  <div class="works-grid">
+
+    <div class="work-item">
+      <div class="work-placeholder">
+        <div class="work-placeholder-inner">
+          <span class="work-placeholder-icon">⊕</span>
+          Add project image<br>or screenshot
+        </div>
+      </div>
+      <div class="work-meta">
+        <div class="cat">Spatial Research · 2026</div>
+        <h3>Reinterpreting Undefinity</h3>
+        <p>Redesigning undefined social zones in campus — queue-culture mapping, anti-panoptic spatial praxis.</p>
+      </div>
+    </div>
+
+    <div class="work-item">
+      <div class="work-placeholder">
+        <div class="work-placeholder-inner">
+          <span class="work-placeholder-icon">◌</span>
+          Add project image
+        </div>
+      </div>
+      <div class="work-meta">
+        <div class="cat">Archive · 2025–2026</div>
+        <h3>Alt Tasarım Arşivi</h3>
+        <p>Material culture archive. Turkish design heritage documentation.</p>
+      </div>
+    </div>
+
+    <div class="work-item">
+      <div class="work-placeholder">
+        <div class="work-placeholder-inner">
+          <span class="work-placeholder-icon">△</span>
+          Add image
+        </div>
+      </div>
+      <div class="work-meta">
+        <div class="cat">Linguistic · 2025</div>
+        <h3>Zazaca (Dimili) Materials</h3>
+        <p>Northern dialect documentation and translation work.</p>
+      </div>
+    </div>
+
+    <div class="work-item">
+      <div class="work-placeholder">
+        <div class="work-placeholder-inner">
+          <span class="work-placeholder-icon">◫</span>
+          Add image
+        </div>
+      </div>
+      <div class="work-meta">
+        <div class="cat">Theory · 2025</div>
+        <h3>Geertz & Interpretive Anthropology</h3>
+        <p>Thick description as design method. Connecting interpretive frameworks to spatial practice.</p>
+      </div>
+    </div>
+
+    <div class="work-item">
+      <div class="work-placeholder">
+        <div class="work-placeholder-inner">
+          <span class="work-placeholder-icon">+</span>
+          New project
+        </div>
+      </div>
+      <div class="work-meta">
+        <div class="cat">Upcoming</div>
+        <h3>[ Next Work ]</h3>
+        <p>Add your next project here.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WRITING -->
+<section id="writing">
+  <div class="section-label">02 · Writing</div>
+  <div class="writing-layout">
+
+    <div class="writing-item">
+      <div class="wt-cat">Essay</div>
+      <span class="wt-arrow">↗</span>
+      <h3>The Queue as Social Infrastructure</h3>
+      <p>On liminal waiting spaces as sites of invisible solidarity and docile body formation. A reading of ODTÜ ring-bus culture through Foucault.</p>
+      <div class="wt-date">2026 · ~2400 words</div>
+    </div>
+
+    <div class="writing-item">
+      <div class="wt-cat">Essay</div>
+      <span class="wt-arrow">↗</span>
+      <h3>Deterritorialization of the Campus</h3>
+      <p>Following Deleuze & Guattari: what happens when students lose their "yurt" — their true home — in the modern university landscape?</p>
+      <div class="wt-date">2026 · ~1800 words</div>
+    </div>
+
+    <div class="writing-item">
+      <div class="wt-cat">Field Notes</div>
+      <span class="wt-arrow">↗</span>
+      <h3>Behavioral Trace Analysis: The Informal Path</h3>
+      <p>Observing desire paths and reclaimed corners as resistance to planned grids. Notes from six weeks of fieldwork.</p>
+      <div class="wt-date">2025 · Field Notes</div>
+    </div>
+
+    <div class="writing-item">
+      <div class="wt-cat">Critical Theory</div>
+      <span class="wt-arrow">↗</span>
+      <h3>Public Privacy as Spatial Right</h3>
+      <p>A Lefebvrian argument for the right to occupancy — and against the reduction of campus topography to transit corridors for capital.</p>
+      <div class="wt-date">2025 · ~3000 words</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- POETRY -->
+<div class="poetry-section" id="poetry">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label">03 · Poetry</div>
+  </div>
+  <div class="poetry-container">
+    <div class="poem-display" id="poemDisplay">
+      <div class="poem-title" id="poemTitle">i. threshold</div>
+      <div id="poemBody">
+        the door that is not a door<br>
+        the waiting that is not waiting —<br>
+        here, between the ring's departure<br>
+        and my own,<br><br>
+        I become<br>
+        legible<br>
+        to no one.<br><br>
+        this is the freedom<br>
+        the planners forgot to pave.
+      </div>
+      <div class="poem-navigation">
+        <button class="poem-btn" onclick="prevPoem()">← prev</button>
+        <span class="poem-counter" id="poemCounter">1 / 3</span>
+        <button class="poem-btn" onclick="nextPoem()">next →</button>
+      </div>
+    </div>
+    <div>
+      <p style="font-family:'IM Fell English',serif; font-size:1rem; line-height:1.9; opacity:0.5; font-style:italic; max-width:400px;">
+        Poetry here lives alongside theory. 
+        Each poem is a field note in another register — 
+        a way of saying what the essay cannot.
+      </p>
+      <div class="upload-hint" style="margin-top:2rem; background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.15); color: var(--paper);">
+        <span class="uh-icon">⊕</span>
+        Add your own poems here
+        <input type="file" accept=".txt,.md" onchange="loadPoem(this)">
+      </div>
+    </div>
+  </div>
+  <div class="poetry-bg-text">verse</div>
+</div>
+
+<!-- EXPLORATIONS -->
+<section id="explorations" style="max-width:100%; padding:6rem 0;">
+  <div style="max-width:1200px;margin:0 auto 3rem;padding:0 2rem;">
+    <div class="section-label">04 · Explorations</div>
+    <p style="font-size:11px; opacity:0.5; max-width:500px;">
+      Unfinished thoughts, visual experiments, methods in progress. 
+      Not everything here is resolved — that's the point.
+    </p>
+  </div>
+  <div class="explorations-grid">
+    <div class="exp-item" data-num="01">
+      <span class="exp-icon">◉</span>
+      <h3>Mapping the Unmapped</h3>
+      <p>Hand-drawn spatial surveys of informal campus zones. Methodology: behavioral trace analysis.</p>
+    </div>
+    <div class="exp-item" data-num="02">
+      <span class="exp-icon">⊞</span>
+      <h3>Material Archive</h3>
+      <p>Objects, textures, found materials — documentation of what gets left behind in threshold spaces.</p>
+    </div>
+    <div class="exp-item" data-num="03">
+      <span class="exp-icon">∿</span>
+      <h3>Language Experiments</h3>
+      <p>Zazaca (Dimili) word-mapping. Northern dialect as spatial metaphor. What does a language remember?</p>
+    </div>
+    <div class="exp-item" data-num="04">
+      <span class="exp-icon">▣</span>
+      <h3>Poster / Manifesto Series</h3>
+      <p>Academic argument as visual object. The poster as a form of spatial occupation.</p>
+    </div>
+    <div class="exp-item" data-num="05">
+      <span class="exp-icon">○</span>
+      <h3>Queue-Culture Photography</h3>
+      <p>Empathetic documentary. Bodies in waiting. What the camera finds that the survey misses.</p>
+    </div>
+    <div class="exp-item" data-num="06">
+      <span class="exp-icon">+</span>
+      <h3>[ Add Exploration ]</h3>
+      <p>Your next experiment. An idea not yet named.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <div class="contact-left">
+    <h2>Let's<br>think<br><em>together.</em></h2>
+  </div>
+  <div class="contact-right">
+    <div class="contact-links">
+      <a href="mailto:furkan@example.com" class="contact-link">
+        <span class="cl-type">Email</span>
+        furkan@example.com
+      </a>
+      <a href="#" class="contact-link">
+        <span class="cl-type">Instagram</span>
+        @furkan
+      </a>
+      <a href="#" class="contact-link">
+        <span class="cl-type">LinkedIn</span>
+        linkedin.com/in/furkan
+      </a>
+      <a href="#" class="contact-link">
+        <span class="cl-type">Archive</span>
+        alttasarim.html
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Furkan · Design Anthropologist · Ankara</span>
+  <span>39°52'N 32°51'E</span>
+  <span>Built as a threshold. 2026.</span>
+</footer>
+
+<script>
+  // SCROLL LINE
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('scrollLine').style.width = pct + '%';
+  });
+
+  // INTERSECTION OBSERVER for work items
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.work-item').forEach(el => observer.observe(el));
+
+  // POEMS
+  const poems = [
+    {
+      title: 'i. threshold',
+      body: `the door that is not a door<br>
+the waiting that is not waiting —<br>
+here, between the ring's departure<br>
+and my own,<br><br>
+I become<br>
+legible<br>
+to no one.<br><br>
+this is the freedom<br>
+the planners forgot to pave.`
+    },
+    {
+      title: 'ii. yurt',
+      body: `they built walls<br>
+where I used to sit.<br><br>
+I still sit<br>
+where there are no walls.<br><br>
+the campus does not know<br>
+what I have learned from<br>
+its forgetting.`
+    },
+    {
+      title: 'iii. docile body',
+      body: `stand here.<br>
+move when the bus comes.<br>
+do not gather.<br>
+do not remain.<br><br>
+we remain anyway —<br>
+in the pause<br>
+between the command<br>
+and our compliance.`
+    }
+  ];
+
+  let currentPoem = 0;
+
+  function renderPoem() {
+    const p = poems[currentPoem];
+    const display = document.getElementById('poemDisplay');
+    display.style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('poemTitle').textContent = p.title;
+      document.getElementById('poemBody').innerHTML = p.body;
+      document.getElementById('poemCounter').textContent = `${currentPoem + 1} / ${poems.length}`;
+      display.style.opacity = '1';
+    }, 200);
+    display.style.transition = 'opacity 0.3s';
+  }
+
+  function nextPoem() {
+    currentPoem = (currentPoem + 1) % poems.length;
+    renderPoem();
+  }
+
+  function prevPoem() {
+    currentPoem = (currentPoem - 1 + poems.length) % poems.length;
+    renderPoem();
+  }
+
+  function loadPoem(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const lines = text.split('\n');
+      const title = lines[0] || file.name;
+      const body = lines.slice(1).join('<br>');
+      poems.push({ title, body });
+      currentPoem = poems.length - 1;
+      renderPoem();
+    };
+    reader.readAsText(file);
+  }
+</script>
+</body>
+</html>
